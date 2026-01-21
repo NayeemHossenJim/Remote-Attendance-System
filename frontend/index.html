@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Remote Attendance</title>
+</head>
+
+<body>
+
+    <h2>Remote Check-In</h2>
+    <button onclick="getLocationAndCheckIn()">Check In</button>
+
+    <script>
+        function getLocationAndCheckIn() {
+            if (!navigator.geolocation) {
+                alert("Geolocation not supported");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const payload = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                    };
+
+                    const res = await fetch(
+                        "http://localhost:8000/attendance/check-in/1",
+                        {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload),
+                        }
+                    );
+
+                    const data = await res.json();
+                    alert(JSON.stringify(data));
+                },
+                () => alert("Location permission denied"),
+                { enableHighAccuracy: true }
+            );
+        }
+    </script>
+
+</body>
+
+</html>
