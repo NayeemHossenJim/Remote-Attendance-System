@@ -1,47 +1,773 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Remote Attendance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .location-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .location-info strong {
+            color: #333;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-link {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-present {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-absent {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .attendance-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .attendance-item h4 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .attendance-item p {
+            font-size: 13px;
+            color: #666;
+            margin: 4px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .user-info strong {
+            color: #667eea;
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>📍 Remote Attendance</h1>
+            <p>Check-in System</p>
+        </div>
 
-    <h2>Remote Check-In</h2>
-    <button onclick="getLocationAndCheckIn()">Check In</button>
+        <div class="content">
+            <!-- Navigation -->
+            <div id="nav-links" class="nav-links hidden">
+                <a href="#" class="nav-link" onclick="showSection('checkin'); return false;">Check-In</a>
+                <a href="#" class="nav-link" onclick="showSection('history'); return false;">History</a>
+                <a href="#" class="nav-link" onclick="showSection('approvals'); return false;" id="approvals-link" style="display: none;">Approvals</a>
+                <a href="#" class="nav-link" onclick="logout(); return false;">Logout</a>
+            </div>
+
+            <!-- Login Section -->
+            <div id="login-section">
+                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Login</h2>
+                <div id="login-alert"></div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Office ID</label>
+                        <input type="text" id="login-office-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+                <p style="text-align: center; margin-top: 15px; font-size: 14px; color: #666;">
+                    Don't have an account? <a href="#" onclick="showSection('register'); return false;" style="color: #667eea;">Register</a>
+                </p>
+            </div>
+
+            <!-- Register Section -->
+            <div id="register-section" class="hidden">
+                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Register</h2>
+                <div id="register-alert"></div>
+                <div class="location-info" id="register-location-info">
+                    <strong>📍 Location:</strong> <span id="register-location-text">Click "Get Location" to capture your home location</span>
+                </div>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label>Office ID</label>
+                        <input type="text" id="register-office-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="register-password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Email (Optional)</label>
+                        <input type="email" id="register-email">
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="getLocationForRegistration()" style="margin-bottom: 15px;">
+                        📍 Get My Location
+                    </button>
+                    <button type="submit" class="btn" id="register-btn" disabled>Register</button>
+                </form>
+                <p style="text-align: center; margin-top: 15px; font-size: 14px; color: #666;">
+                    Already have an account? <a href="#" onclick="showSection('login'); return false;" style="color: #667eea;">Login</a>
+                </p>
+            </div>
+
+            <!-- Check-In Section -->
+            <div id="checkin-section" class="hidden">
+                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Check-In</h2>
+                <div id="user-info" class="user-info"></div>
+                <div id="checkin-alert"></div>
+                <div class="location-info" id="checkin-location-info">
+                    <strong>📍 Current Location:</strong> <span id="checkin-location-text">Click "Get Location" to check-in</span>
+                </div>
+                <button type="button" class="btn" onclick="performCheckIn()" id="checkin-btn">
+                    ✅ Check-In
+                </button>
+                <div id="late-request-section" class="hidden" style="margin-top: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #333; font-size: 18px;">Late Check-In Request</h3>
+                    <div class="form-group">
+                        <label>Reason for Late Check-In</label>
+                        <textarea id="late-reason" placeholder="Please provide a reason for your late check-in..." required></textarea>
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="submitLateRequest()">
+                        📝 Submit Request
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div id="history-section" class="hidden">
+                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Attendance History</h2>
+                <div id="history-content"></div>
+            </div>
+
+            <!-- Approvals Section (Team Lead) -->
+            <div id="approvals-section" class="hidden">
+                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Pending Approvals</h2>
+                <div id="approvals-content"></div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        function getLocationAndCheckIn() {
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let authToken = null;
+        let registrationLocation = null;
+
+        // Check if user is logged in
+        function checkAuth() {
+            authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                loadUserInfo();
+                showSection('checkin');
+            } else {
+                showSection('login');
+            }
+        }
+
+        // Show specific section
+        function showSection(section) {
+            document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(section + '-section').classList.remove('hidden');
+            
+            if (section === 'checkin' || section === 'history' || section === 'approvals') {
+                document.getElementById('nav-links').classList.remove('hidden');
+                if (section === 'checkin') {
+                    loadUserInfo();
+                } else if (section === 'history') {
+                    loadHistory();
+                } else if (section === 'approvals') {
+                    loadPendingApprovals();
+                }
+            } else {
+                document.getElementById('nav-links').classList.add('hidden');
+            }
+        }
+
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const officeId = document.getElementById('login-office-id').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ office_id: officeId, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.access_token;
+                    localStorage.setItem('authToken', authToken);
+                    currentUser = data;
+                    showAlert('login-alert', 'Login successful!', 'success');
+                    setTimeout(() => showSection('checkin'), 1000);
+                } else {
+                    showAlert('login-alert', data.detail || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showAlert('login-alert', 'Network error. Please try again.', 'error');
+            }
+        });
+
+        // Get location for registration
+        function getLocationForRegistration() {
             if (!navigator.geolocation) {
-                alert("Geolocation not supported");
+                showAlert('register-alert', 'Geolocation is not supported by your browser', 'error');
+                return;
+            }
+
+            showAlert('register-alert', 'Getting your location...', 'info');
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    registrationLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    document.getElementById('register-location-text').textContent = 
+                        `${registrationLocation.latitude.toFixed(6)}, ${registrationLocation.longitude.toFixed(6)}`;
+                    document.getElementById('register-btn').disabled = false;
+                    showAlert('register-alert', 'Location captured successfully!', 'success');
+                },
+                (error) => {
+                    showAlert('register-alert', 'Failed to get location. Please enable location permissions.', 'error');
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // Register
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!registrationLocation) {
+                showAlert('register-alert', 'Please capture your location first', 'error');
+                return;
+            }
+
+            const officeId = document.getElementById('register-office-id').value;
+            const password = document.getElementById('register-password').value;
+            const email = document.getElementById('register-email').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        office_id: officeId,
+                        password,
+                        email: email || null,
+                        latitude: registrationLocation.latitude,
+                        longitude: registrationLocation.longitude
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('register-alert', 'Registration successful! Please login.', 'success');
+                    setTimeout(() => showSection('login'), 2000);
+                } else {
+                    showAlert('register-alert', data.detail || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showAlert('register-alert', 'Network error. Please try again.', 'error');
+            }
+        });
+
+        // Load user info
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('user-info').innerHTML = `
+                        <strong>Office ID:</strong> ${currentUser.office_id}<br>
+                        <strong>Role:</strong> ${currentUser.role}<br>
+                        <strong>Home Location:</strong> ${currentUser.home_latitude ? 
+                            `${currentUser.home_latitude.toFixed(6)}, ${currentUser.home_longitude.toFixed(6)}` : 'Not set'}<br>
+                        <strong>Allowed Radius:</strong> ${currentUser.allowed_radius_m}m
+                    `;
+                    
+                    if (currentUser.role === 'team_lead') {
+                        document.getElementById('approvals-link').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load user info:', error);
+            }
+        }
+
+        // Perform check-in
+        async function performCheckIn() {
+            if (!navigator.geolocation) {
+                showAlert('checkin-alert', 'Geolocation is not supported', 'error');
+                return;
+            }
+
+            document.getElementById('checkin-btn').disabled = true;
+            showAlert('checkin-alert', 'Getting your location...', 'info');
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    document.getElementById('checkin-location-text').textContent = 
+                        `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+                    try {
+                        const response = await fetch(`${API_BASE}/attendance/check-in`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${authToken}`
+                            },
+                            body: JSON.stringify({ latitude: lat, longitude: lng })
+                        });
+
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            if (data.status === 'PRESENT') {
+                                showAlert('checkin-alert', data.message, 'success');
+                                document.getElementById('late-request-section').classList.add('hidden');
+                            } else if (data.status === 'ABSENT') {
+                                showAlert('checkin-alert', data.message, 'error');
+                                if (data.can_request_present) {
+                                    document.getElementById('late-request-section').classList.remove('hidden');
+                                }
+                            } else {
+                                showAlert('checkin-alert', data.message, 'warning');
+                            }
+                            
+                            if (data.distance_from_home !== null) {
+                                document.getElementById('checkin-location-info').innerHTML += 
+                                    `<br><strong>Distance from home:</strong> ${data.distance_from_home.toFixed(0)}m`;
+                            }
+                        } else {
+                            showAlert('checkin-alert', data.detail || 'Check-in failed', 'error');
+                        }
+                    } catch (error) {
+                        showAlert('checkin-alert', 'Network error. Please try again.', 'error');
+                    } finally {
+                        document.getElementById('checkin-btn').disabled = false;
+                    }
+                },
+                (error) => {
+                    showAlert('checkin-alert', 'Failed to get location. Please enable location permissions.', 'error');
+                    document.getElementById('checkin-btn').disabled = false;
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // Submit late request
+        async function submitLateRequest() {
+            const reason = document.getElementById('late-reason').value;
+            if (!reason.trim()) {
+                showAlert('checkin-alert', 'Please provide a reason', 'error');
+                return;
+            }
+
+            if (!navigator.geolocation) {
+                showAlert('checkin-alert', 'Geolocation is not supported', 'error');
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    const payload = {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                    };
+                    try {
+                        const response = await fetch(`${API_BASE}/attendance/late-check-in-request`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${authToken}`
+                            },
+                            body: JSON.stringify({
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                reason: reason
+                            })
+                        });
 
-                    const res = await fetch(
-                        "http://localhost:8000/attendance/check-in/1",
-                        {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(payload),
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            showAlert('checkin-alert', data.message, 'success');
+                            document.getElementById('late-request-section').classList.add('hidden');
+                            document.getElementById('late-reason').value = '';
+                        } else {
+                            showAlert('checkin-alert', data.detail || 'Request failed', 'error');
                         }
-                    );
-
-                    const data = await res.json();
-                    alert(JSON.stringify(data));
+                    } catch (error) {
+                        showAlert('checkin-alert', 'Network error. Please try again.', 'error');
+                    }
                 },
-                () => alert("Location permission denied"),
+                (error) => {
+                    showAlert('checkin-alert', 'Failed to get location', 'error');
+                },
                 { enableHighAccuracy: true }
             );
         }
+
+        // Load history
+        async function loadHistory() {
+            document.getElementById('history-content').innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/attendance/history`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const records = await response.json();
+                    if (records.length === 0) {
+                        document.getElementById('history-content').innerHTML = 
+                            '<p style="text-align: center; color: #666;">No attendance records found.</p>';
+                    } else {
+                        document.getElementById('history-content').innerHTML = records.map(record => `
+                            <div class="attendance-item">
+                                <h4>${new Date(record.created_at).toLocaleString()}
+                                    <span class="status-badge status-${record.status.toLowerCase()}">${record.status}</span>
+                                </h4>
+                                ${record.distance_from_home !== null ? 
+                                    `<p><strong>Distance:</strong> ${record.distance_from_home.toFixed(0)}m</p>` : ''}
+                                ${record.is_late_request ? 
+                                    `<p><strong>Late Request:</strong> ${record.late_request_reason || 'N/A'}</p>` : ''}
+                                ${record.approved_by ? 
+                                    `<p><strong>Approved by:</strong> User ID ${record.approved_by} on ${new Date(record.approved_at).toLocaleString()}</p>` : ''}
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                document.getElementById('history-content').innerHTML = 
+                    '<div class="alert alert-error">Failed to load history</div>';
+            }
+        }
+
+        // Load pending approvals (Team Lead)
+        async function loadPendingApprovals() {
+            document.getElementById('approvals-content').innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/attendance/pending-approvals`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const records = await response.json();
+                    if (records.length === 0) {
+                        document.getElementById('approvals-content').innerHTML = 
+                            '<p style="text-align: center; color: #666;">No pending approvals.</p>';
+                    } else {
+                        document.getElementById('approvals-content').innerHTML = records.map(record => `
+                            <div class="attendance-item">
+                                <h4>User ID: ${record.user_id} - ${new Date(record.created_at).toLocaleString()}</h4>
+                                <p><strong>Reason:</strong> ${record.late_request_reason || 'N/A'}</p>
+                                ${record.distance_from_home !== null ? 
+                                    `<p><strong>Distance:</strong> ${record.distance_from_home.toFixed(0)}m</p>` : ''}
+                                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                    <button class="btn btn-success" onclick="approveRequest(${record.id}, true)" style="flex: 1; padding: 10px;">
+                                        ✅ Approve
+                                    </button>
+                                    <button class="btn btn-danger" onclick="approveRequest(${record.id}, false)" style="flex: 1; padding: 10px;">
+                                        ❌ Reject
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                document.getElementById('approvals-content').innerHTML = 
+                    '<div class="alert alert-error">Failed to load approvals</div>';
+            }
+        }
+
+        // Approve/Reject request
+        async function approveRequest(attendanceId, approve) {
+            const comment = approve ? null : prompt('Reason for rejection (optional):');
+            
+            try {
+                const response = await fetch(`${API_BASE}/attendance/approve-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        attendance_id: attendanceId,
+                        approve: approve,
+                        comment: comment
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(data.message);
+                    loadPendingApprovals();
+                } else {
+                    alert(data.detail || 'Action failed');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Show alert
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('authToken');
+            authToken = null;
+            currentUser = null;
+            showSection('login');
+        }
+
+        // Initialize
+        checkAuth();
     </script>
-
 </body>
-
 </html>
