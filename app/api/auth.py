@@ -20,7 +20,7 @@ from app.services.auth_service import (
 from app.core.security import create_access_token
 from app.core.config import settings
 from app.db.session import get_db
-from app.api.dependencies import get_current_user
+from app.api.dependencies import get_current_user, get_current_admin
 from app.models.user import User
 
 router = APIRouter()
@@ -105,3 +105,20 @@ def get_current_user_info(current_user: User = Depends(get_current_user)):
         home_longitude=current_user.home_longitude,
         allowed_radius_m=current_user.allowed_radius_m
     )
+
+@router.get("/users", response_model=list[UserResponse])
+def get_all_users(
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Get all users (Admin only)"""
+    users = db.query(User).all()
+    return [UserResponse(
+        id=user.id,
+        office_id=user.office_id,
+        email=user.email,
+        role=user.role,
+        home_latitude=user.home_latitude,
+        home_longitude=user.home_longitude,
+        allowed_radius_m=user.allowed_radius_m
+    ) for user in users]

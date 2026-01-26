@@ -49,10 +49,21 @@ def get_current_user(
 def get_current_team_lead(
     current_user: User = Depends(get_current_user)
 ) -> User:
-    """Ensure current user is a team lead"""
-    if current_user.role != "team_lead":
+    """Ensure current user is a team lead or admin"""
+    if current_user.role not in ["team_lead", "admin"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only team leads can perform this action"
+            detail="Only team leads or admins can perform this action"
+        )
+    return current_user
+
+def get_current_admin(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """Ensure current user is an admin"""
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can perform this action"
         )
     return current_user

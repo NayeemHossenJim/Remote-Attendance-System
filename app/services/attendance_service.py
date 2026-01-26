@@ -14,11 +14,11 @@ def check_in(db: Session, user: User, lat: float, lng: float):
     - If 08:00-09:30: Check GPS, mark PRESENT/ABSENT
     - If after 09:30: Mark ABSENT, enable late request
     """
-    now = datetime.utcnow()
+    now = datetime.now()
     time_state = check_time(now)
     
     # Check if user already checked in today
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     existing_checkin = db.query(Attendance).filter(
         Attendance.user_id == user.id,
         Attendance.created_at >= today_start
@@ -128,7 +128,7 @@ def submit_late_check_in_request(
     reason: str
 ):
     """Submit late check-in request (after 09:30)"""
-    now = datetime.utcnow()
+    now = datetime.now()
     time_state = check_time(now)
     
     if time_state != "LATE":
@@ -138,7 +138,7 @@ def submit_late_check_in_request(
         )
     
     # Check if there's already a pending request today
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     existing_request = db.query(Attendance).filter(
         Attendance.user_id == user.id,
         Attendance.created_at >= today_start,
@@ -189,9 +189,9 @@ def approve_late_check_in(
     approve: bool,
     comment: str = None
 ):
-    """Team Lead approves or rejects late check-in request"""
-    if team_lead.role != "team_lead":
-        raise HTTPException(status_code=403, detail="Only team leads can approve requests")
+    """Team Lead or Admin approves or rejects late check-in request"""
+    if team_lead.role not in ["team_lead", "admin"]:
+        raise HTTPException(status_code=403, detail="Only team leads or admins can approve requests")
     
     attendance = db.query(Attendance).filter(
         Attendance.id == attendance_id,
@@ -205,12 +205,12 @@ def approve_late_check_in(
     if approve:
         attendance.status = "PRESENT"
         attendance.approved_by = team_lead.id
-        attendance.approved_at = datetime.utcnow()
+        attendance.approved_at = datetime.now()
         message = "Late check-in request approved. Employee marked as present."
     else:
         attendance.status = "ABSENT"
         attendance.approved_by = team_lead.id
-        attendance.approved_at = datetime.utcnow()
+        attendance.approved_at = datetime.now()
         if comment:
             attendance.late_request_reason = f"{attendance.late_request_reason}\n[Rejected: {comment}]"
         message = "Late check-in request rejected. Employee remains marked as absent."

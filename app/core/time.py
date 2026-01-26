@@ -23,5 +23,5 @@ def check_time(now: datetime) -> str:
 def is_within_check_in_window(now: datetime = None) -> bool:
     """Check if current time is within check-in window"""
     if now is None:
-        now = datetime.utcnow()
+        now = datetime.now()
     return check_time(now) == "ON_TIME"
