@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from app.models.user import User
+from app.db.session import get_db
 from sqlalchemy.orm import Session
-from datetime import timedelta
+from app.core.security import create_access_token
+from fastapi import APIRouter, Depends, HTTPException, status
+from app.api.dependencies import get_current_user, get_current_admin
 from app.schemas.auth import (
     LoginRequest, 
     LoginResponse, 
@@ -17,11 +20,6 @@ from app.services.auth_service import (
     request_password_reset, 
     reset_password
 )
-from app.core.security import create_access_token
-from app.core.config import settings
-from app.db.session import get_db
-from app.api.dependencies import get_current_user, get_current_admin
-from app.models.user import User
 
 router = APIRouter()
 

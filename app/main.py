@@ -1,10 +1,12 @@
+import os
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from app.db.base import Base
 from app.db.session import engine
-from app.api import auth, attendance
 from app.core.config import settings
+from app.api import auth, attendance
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -28,11 +30,6 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(attendance.router, prefix="/api/attendance", tags=["Attendance"])
 
-# Serve frontend static files
-from fastapi.responses import FileResponse
-import os
-
-# Mount static files (only if directory exists)
 if os.path.exists("frontend"):
     app.mount("/static", StaticFiles(directory="frontend"), name="static")
 

@@ -1,12 +1,12 @@
-from datetime import datetime
 from typing import List
-from sqlalchemy.orm import Session
-from app.models.attendance import Attendance
+from datetime import datetime
 from app.models.user import User
-from app.core.time import check_time, is_within_check_in_window
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
 from app.core.geo import haversine
 from app.core.config import settings
-from fastapi import HTTPException
+from app.core.time import check_time
+from app.models.attendance import Attendance
 
 def check_in(db: Session, user: User, lat: float, lng: float):
     """
@@ -45,26 +45,21 @@ def check_in(db: Session, user: User, lat: float, lng: float):
     
     # Flowchart logic: 08:00 - 09:30
     if time_state == "ON_TIME":
-        # Check GPS location match
         if distance is None:
-            # Home location not set
             status = "ABSENT"
             message = "Home location not set. Please contact administrator."
             check_in_enabled = False
         
         elif distance <= user.allowed_radius_m:
-            # Location Match -> Yes -> Mark Present
             status = "PRESENT"
             message = "Check-in successful! You are marked as present."
             check_in_enabled = True
         
         else:
-            # Location Match -> No -> Mark Absent
             status = "ABSENT"
             message = f"Location mismatch. You are {distance:.0f}m away from your registered location. Marked as Absent."
             check_in_enabled = False
 
-        # Create attendance record
         attendance = Attendance(
             user_id=user.id,
             status=status,
@@ -86,11 +81,9 @@ def check_in(db: Session, user: User, lat: float, lng: float):
 
     # Flowchart logic: After 09:30
     elif time_state == "LATE":
-        # Mark as Absent (System)
         status = "ABSENT"
         message = "Check-in window has passed. Marked as Absent. You can submit a request for present."
         
-        # Create attendance record marked as absent
         attendance = Attendance(
             user_id=user.id,
             status=status,
@@ -107,7 +100,7 @@ def check_in(db: Session, user: User, lat: float, lng: float):
             "message": message,
             "distance_from_home": distance,
             "check_in_enabled": False,
-            "can_request_present": True # Enable Request for Present
+            "can_request_present": True
         }
 
     # Before Window
@@ -137,7 +130,6 @@ def submit_late_check_in_request(
             detail="Late check-in requests can only be submitted after the check-in window"
         )
     
-    # Check if there's already a pending request today
     today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     existing_request = db.query(Attendance).filter(
         Attendance.user_id == user.id,
@@ -161,7 +153,6 @@ def submit_late_check_in_request(
             user.home_longitude
         )
     
-    # Create pending request
     attendance = Attendance(
         user_id=user.id,
         status="PENDING",
@@ -237,7 +228,6 @@ def get_pending_approvals(db: Session, team_lead_id: int = None) -> List[Attenda
     )
     
     if team_lead_id:
-        # Get requests for team members (simplified - in production, add team relationship)
         query = query
     
     return query.order_by(Attendance.created_at.desc()).all()

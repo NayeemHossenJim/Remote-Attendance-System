@@ -1,13 +1,10 @@
-from datetime import datetime, timedelta
+import secrets
 from typing import Optional
 from jose import JWTError, jwt
-# from passlib.context import CryptContext # Removed
 from app.core.config import settings
-import secrets
+from datetime import datetime, timedelta
 
 import bcrypt
-
-# pwd_context = CryptContext(schemes=["bcrypt"]) # Removed passlib
 
 def hash_password(password: str) -> str:
     # return pwd_context.hash(password)

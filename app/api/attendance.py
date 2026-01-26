@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas.attendance import (
     CheckInRequest,
     CheckInResponse,
