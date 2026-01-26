@@ -45,21 +45,25 @@ def check_in(db: Session, user: User, lat: float, lng: float):
     
     # Flowchart logic: 08:00 - 09:30
     if time_state == "ON_TIME":
+        # Check GPS location match
         if distance is None:
+            # Home location not set
             status = "ABSENT"
             message = "Home location not set. Please contact administrator."
             check_in_enabled = False
+        
         elif distance <= user.allowed_radius_m:
-            # Location matches - Mark Present
+            # Location Match -> Yes -> Mark Present
             status = "PRESENT"
             message = "Check-in successful! You are marked as present."
             check_in_enabled = True
-        else:
-            # Location doesn't match - Mark Absent
-            status = "ABSENT"
-            message = f"Location mismatch. You are {distance:.0f}m away from your registered location (allowed: {user.allowed_radius_m}m)."
-            check_in_enabled = False
         
+        else:
+            # Location Match -> No -> Mark Absent
+            status = "ABSENT"
+            message = f"Location mismatch. You are {distance:.0f}m away from your registered location. Marked as Absent."
+            check_in_enabled = False
+
         # Create attendance record
         attendance = Attendance(
             user_id=user.id,
@@ -79,12 +83,12 @@ def check_in(db: Session, user: User, lat: float, lng: float):
             "check_in_enabled": check_in_enabled,
             "can_request_present": False
         }
-    
+
     # Flowchart logic: After 09:30
     elif time_state == "LATE":
-        # Mark as absent automatically
+        # Mark as Absent (System)
         status = "ABSENT"
-        message = "Check-in window has passed (08:00-09:30). You are marked as absent. You can request to be marked present."
+        message = "Check-in window has passed. Marked as Absent. You can submit a request for present."
         
         # Create attendance record marked as absent
         attendance = Attendance(
@@ -103,12 +107,12 @@ def check_in(db: Session, user: User, lat: float, lng: float):
             "message": message,
             "distance_from_home": distance,
             "check_in_enabled": False,
-            "can_request_present": True
+            "can_request_present": True # Enable Request for Present
         }
-    
-    # Before check-in window
+
+    # Before Window
     else:
-        return {
+         return {
             "status": "BEFORE_WINDOW",
             "message": f"Check-in window opens at {settings.CHECK_IN_START_HOUR:02d}:{settings.CHECK_IN_START_MINUTE:02d}",
             "distance_from_home": distance,

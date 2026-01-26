@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Remote Attendance System</title>
     <style>
+        :root {
+            --primary: #000000;
+            --secondary: #666666;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --border: #eaeaea;
+            --success: #15803d;
+            --error: #b91c1c;
+            --warning: #b45309;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,181 +24,213 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 440px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+            padding: 32px 24px 24px;
             text-align: center;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
         }
 
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: -0.025em;
         }
 
         .header p {
-            opacity: 0.9;
+            color: var(--secondary);
             font-size: 14px;
         }
 
         .content {
-            padding: 30px;
+            padding: 24px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 6px;
+            color: var(--primary);
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        input, textarea, select {
+        input,
+        textarea,
+        select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
             font-size: 14px;
-            transition: border-color 0.3s;
+            color: var(--primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fff;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
         }
 
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
         }
 
         .btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px 16px;
+            background: var(--primary);
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
         }
 
         .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #262626;
+            transform: translateY(-1px);
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            background: #a3a3a3;
             cursor: not-allowed;
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: white;
+            color: var(--primary);
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #f5f5f5;
         }
 
         .btn-success {
-            background: #28a745;
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #166534;
         }
 
         .btn-danger {
-            background: #dc3545;
+            background: var(--error);
+        }
+
+        .btn-danger:hover {
+            background: #991b1b;
         }
 
         .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            border-width: 1px;
+            border-style: solid;
         }
 
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
         }
 
         .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
         }
 
         .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: #f9fafb;
+            color: #374151;
+            border-color: #e5e7eb;
         }
 
         .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
+            background: #fffbeb;
+            color: #92400e;
+            border-color: #fde68a;
         }
 
         .location-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
             font-size: 13px;
-            color: #666;
+            color: var(--secondary);
+            border: 1px solid var(--border);
         }
 
         .location-info strong {
-            color: #333;
+            color: var(--primary);
         }
 
         .nav-links {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
         }
 
         .nav-link {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            background: transparent;
+            border-radius: 6px;
             text-decoration: none;
-            color: #333;
-            font-size: 14px;
+            color: var(--secondary);
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .nav-link:hover {
-            background: #e9ecef;
-            border-color: #667eea;
+            color: var(--primary);
+            background: #f3f4f6;
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
+            color: var(--primary);
+            background: #f3f4f6;
+            font-weight: 600;
         }
 
         .hidden {
@@ -194,82 +238,113 @@
         }
 
         .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 10px;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+            border: 1px solid transparent;
         }
 
         .status-present {
-            background: #d4edda;
-            color: #155724;
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
         }
 
         .status-absent {
-            background: #f8d7da;
-            color: #721c24;
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
         }
 
         .status-pending {
-            background: #fff3cd;
-            color: #856404;
+            background: #fffbeb;
+            color: #92400e;
+            border-color: #fde68a;
         }
 
         .attendance-item {
-            background: #f8f9fa;
-            padding: 15px;
+            padding: 16px;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
+            margin-bottom: 12px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .attendance-item:hover {
+            border-color: #d1d5db;
         }
 
         .attendance-item h4 {
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 4px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .attendance-item p {
             font-size: 13px;
-            color: #666;
+            color: var(--secondary);
             margin: 4px 0;
+            line-height: 1.5;
         }
 
         .loading {
             text-align: center;
-            padding: 20px;
-            color: #666;
+            padding: 32px;
+            color: var(--secondary);
+            font-size: 13px;
         }
 
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid var(--primary);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .user-info {
-            background: #f8f9fa;
-            padding: 15px;
+            background: #f9fafb;
+            padding: 16px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            border: 1px solid var(--border);
         }
 
         .user-info strong {
-            color: #667eea;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        a:hover {
+            text-decoration: none;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -282,13 +357,14 @@
             <div id="nav-links" class="nav-links hidden">
                 <a href="#" class="nav-link" onclick="showSection('checkin'); return false;">Check-In</a>
                 <a href="#" class="nav-link" onclick="showSection('history'); return false;">History</a>
-                <a href="#" class="nav-link" onclick="showSection('approvals'); return false;" id="approvals-link" style="display: none;">Approvals</a>
+                <a href="#" class="nav-link" onclick="showSection('approvals'); return false;" id="approvals-link"
+                    style="display: none;">Approvals</a>
                 <a href="#" class="nav-link" onclick="logout(); return false;">Logout</a>
             </div>
 
             <!-- Login Section -->
             <div id="login-section">
-                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Login</h2>
+                <h2 style="margin-bottom: 24px;">Login</h2>
                 <div id="login-alert"></div>
                 <form id="login-form">
                     <div class="form-group">
@@ -302,16 +378,17 @@
                     <button type="submit" class="btn">Login</button>
                 </form>
                 <p style="text-align: center; margin-top: 15px; font-size: 14px; color: #666;">
-                    Don't have an account? <a href="#" onclick="showSection('register'); return false;" style="color: #667eea;">Register</a>
+                    Don't have an account? <a href="#" onclick="showSection('register'); return false;">Register</a>
                 </p>
             </div>
 
             <!-- Register Section -->
             <div id="register-section" class="hidden">
-                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Register</h2>
+                <h2 style="margin-bottom: 24px;">Register</h2>
                 <div id="register-alert"></div>
                 <div class="location-info" id="register-location-info">
-                    <strong>📍 Location:</strong> <span id="register-location-text">Click "Get Location" to capture your home location</span>
+                    <strong>📍 Location:</strong> <span id="register-location-text">Click "Get Location" to capture your
+                        home location</span>
                 </div>
                 <form id="register-form">
                     <div class="form-group">
@@ -326,32 +403,35 @@
                         <label>Email (Optional)</label>
                         <input type="email" id="register-email">
                     </div>
-                    <button type="button" class="btn btn-secondary" onclick="getLocationForRegistration()" style="margin-bottom: 15px;">
+                    <button type="button" class="btn btn-secondary" onclick="getLocationForRegistration()"
+                        style="margin-bottom: 15px;">
                         📍 Get My Location
                     </button>
                     <button type="submit" class="btn" id="register-btn" disabled>Register</button>
                 </form>
                 <p style="text-align: center; margin-top: 15px; font-size: 14px; color: #666;">
-                    Already have an account? <a href="#" onclick="showSection('login'); return false;" style="color: #667eea;">Login</a>
+                    Already have an account? <a href="#" onclick="showSection('login'); return false;">Login</a>
                 </p>
             </div>
 
             <!-- Check-In Section -->
             <div id="checkin-section" class="hidden">
-                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Check-In</h2>
+                <h2 style="margin-bottom: 24px;">Check-In</h2>
                 <div id="user-info" class="user-info"></div>
                 <div id="checkin-alert"></div>
                 <div class="location-info" id="checkin-location-info">
-                    <strong>📍 Current Location:</strong> <span id="checkin-location-text">Click "Get Location" to check-in</span>
+                    <strong>📍 Current Location:</strong> <span id="checkin-location-text">Click "Get Location" to
+                        check-in</span>
                 </div>
                 <button type="button" class="btn" onclick="performCheckIn()" id="checkin-btn">
                     ✅ Check-In
                 </button>
                 <div id="late-request-section" class="hidden" style="margin-top: 20px;">
-                    <h3 style="margin-bottom: 15px; color: #333; font-size: 18px;">Late Check-In Request</h3>
+                    <h3 style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">Late Check-In Request</h3>
                     <div class="form-group">
                         <label>Reason for Late Check-In</label>
-                        <textarea id="late-reason" placeholder="Please provide a reason for your late check-in..." required></textarea>
+                        <textarea id="late-reason" placeholder="Please provide a reason for your late check-in..."
+                            required></textarea>
                     </div>
                     <button type="button" class="btn btn-success" onclick="submitLateRequest()">
                         📝 Submit Request
@@ -361,13 +441,13 @@
 
             <!-- History Section -->
             <div id="history-section" class="hidden">
-                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Attendance History</h2>
+                <h2 style="margin-bottom: 24px;">Attendance History</h2>
                 <div id="history-content"></div>
             </div>
 
             <!-- Approvals Section (Team Lead) -->
             <div id="approvals-section" class="hidden">
-                <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Pending Approvals</h2>
+                <h2 style="margin-bottom: 24px;">Pending Approvals</h2>
                 <div id="approvals-content"></div>
             </div>
         </div>
@@ -394,7 +474,7 @@
         function showSection(section) {
             document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
             document.getElementById(section + '-section').classList.remove('hidden');
-            
+
             if (section === 'checkin' || section === 'history' || section === 'approvals') {
                 document.getElementById('nav-links').classList.remove('hidden');
                 if (section === 'checkin') {
@@ -414,16 +494,16 @@
             e.preventDefault();
             const officeId = document.getElementById('login-office-id').value;
             const password = document.getElementById('login-password').value;
-            
+
             try {
                 const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ office_id: officeId, password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     authToken = data.access_token;
                     localStorage.setItem('authToken', authToken);
@@ -446,14 +526,14 @@
             }
 
             showAlert('register-alert', 'Getting your location...', 'info');
-            
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     registrationLocation = {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     };
-                    document.getElementById('register-location-text').textContent = 
+                    document.getElementById('register-location-text').textContent =
                         `${registrationLocation.latitude.toFixed(6)}, ${registrationLocation.longitude.toFixed(6)}`;
                     document.getElementById('register-btn').disabled = false;
                     showAlert('register-alert', 'Location captured successfully!', 'success');
@@ -468,7 +548,7 @@
         // Register
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             if (!registrationLocation) {
                 showAlert('register-alert', 'Please capture your location first', 'error');
                 return;
@@ -492,7 +572,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     showAlert('register-alert', 'Registration successful! Please login.', 'success');
                     setTimeout(() => showSection('login'), 2000);
@@ -510,17 +590,17 @@
                 const response = await fetch(`${API_BASE}/auth/me`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
-                
+
                 if (response.ok) {
                     currentUser = await response.json();
                     document.getElementById('user-info').innerHTML = `
                         <strong>Office ID:</strong> ${currentUser.office_id}<br>
                         <strong>Role:</strong> ${currentUser.role}<br>
-                        <strong>Home Location:</strong> ${currentUser.home_latitude ? 
+                        <strong>Home Location:</strong> ${currentUser.home_latitude ?
                             `${currentUser.home_latitude.toFixed(6)}, ${currentUser.home_longitude.toFixed(6)}` : 'Not set'}<br>
                         <strong>Allowed Radius:</strong> ${currentUser.allowed_radius_m}m
                     `;
-                    
+
                     if (currentUser.role === 'team_lead') {
                         document.getElementById('approvals-link').style.display = 'block';
                     }
@@ -544,8 +624,8 @@
                 async (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    
-                    document.getElementById('checkin-location-text').textContent = 
+
+                    document.getElementById('checkin-location-text').textContent =
                         `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
                     try {
@@ -559,7 +639,7 @@
                         });
 
                         const data = await response.json();
-                        
+
                         if (response.ok) {
                             if (data.status === 'PRESENT') {
                                 showAlert('checkin-alert', data.message, 'success');
@@ -572,9 +652,9 @@
                             } else {
                                 showAlert('checkin-alert', data.message, 'warning');
                             }
-                            
+
                             if (data.distance_from_home !== null) {
-                                document.getElementById('checkin-location-info').innerHTML += 
+                                document.getElementById('checkin-location-info').innerHTML +=
                                     `<br><strong>Distance from home:</strong> ${data.distance_from_home.toFixed(0)}m`;
                             }
                         } else {
@@ -624,7 +704,7 @@
                         });
 
                         const data = await response.json();
-                        
+
                         if (response.ok) {
                             showAlert('checkin-alert', data.message, 'success');
                             document.getElementById('late-request-section').classList.add('hidden');
@@ -646,7 +726,7 @@
         // Load history
         async function loadHistory() {
             document.getElementById('history-content').innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
-            
+
             try {
                 const response = await fetch(`${API_BASE}/attendance/history`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
@@ -655,7 +735,7 @@
                 if (response.ok) {
                     const records = await response.json();
                     if (records.length === 0) {
-                        document.getElementById('history-content').innerHTML = 
+                        document.getElementById('history-content').innerHTML =
                             '<p style="text-align: center; color: #666;">No attendance records found.</p>';
                     } else {
                         document.getElementById('history-content').innerHTML = records.map(record => `
@@ -663,18 +743,18 @@
                                 <h4>${new Date(record.created_at).toLocaleString()}
                                     <span class="status-badge status-${record.status.toLowerCase()}">${record.status}</span>
                                 </h4>
-                                ${record.distance_from_home !== null ? 
-                                    `<p><strong>Distance:</strong> ${record.distance_from_home.toFixed(0)}m</p>` : ''}
-                                ${record.is_late_request ? 
-                                    `<p><strong>Late Request:</strong> ${record.late_request_reason || 'N/A'}</p>` : ''}
-                                ${record.approved_by ? 
-                                    `<p><strong>Approved by:</strong> User ID ${record.approved_by} on ${new Date(record.approved_at).toLocaleString()}</p>` : ''}
+                                ${record.distance_from_home !== null ?
+                                `<p><strong>Distance:</strong> ${record.distance_from_home.toFixed(0)}m</p>` : ''}
+                                ${record.is_late_request ?
+                                `<p><strong>Late Request:</strong> ${record.late_request_reason || 'N/A'}</p>` : ''}
+                                ${record.approved_by ?
+                                `<p><strong>Approved by:</strong> User ID ${record.approved_by} on ${new Date(record.approved_at).toLocaleString()}</p>` : ''}
                             </div>
                         `).join('');
                     }
                 }
             } catch (error) {
-                document.getElementById('history-content').innerHTML = 
+                document.getElementById('history-content').innerHTML =
                     '<div class="alert alert-error">Failed to load history</div>';
             }
         }
@@ -682,7 +762,7 @@
         // Load pending approvals (Team Lead)
         async function loadPendingApprovals() {
             document.getElementById('approvals-content').innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
-            
+
             try {
                 const response = await fetch(`${API_BASE}/attendance/pending-approvals`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
@@ -691,15 +771,15 @@
                 if (response.ok) {
                     const records = await response.json();
                     if (records.length === 0) {
-                        document.getElementById('approvals-content').innerHTML = 
+                        document.getElementById('approvals-content').innerHTML =
                             '<p style="text-align: center; color: #666;">No pending approvals.</p>';
                     } else {
                         document.getElementById('approvals-content').innerHTML = records.map(record => `
                             <div class="attendance-item">
                                 <h4>User ID: ${record.user_id} - ${new Date(record.created_at).toLocaleString()}</h4>
                                 <p><strong>Reason:</strong> ${record.late_request_reason || 'N/A'}</p>
-                                ${record.distance_from_home !== null ? 
-                                    `<p><strong>Distance:</strong> ${record.distance_from_home.toFixed(0)}m</p>` : ''}
+                                ${record.distance_from_home !== null ?
+                                `<p><strong>Distance:</strong> ${record.distance_from_home.toFixed(0)}m</p>` : ''}
                                 <div style="margin-top: 10px; display: flex; gap: 10px;">
                                     <button class="btn btn-success" onclick="approveRequest(${record.id}, true)" style="flex: 1; padding: 10px;">
                                         ✅ Approve
@@ -713,7 +793,7 @@
                     }
                 }
             } catch (error) {
-                document.getElementById('approvals-content').innerHTML = 
+                document.getElementById('approvals-content').innerHTML =
                     '<div class="alert alert-error">Failed to load approvals</div>';
             }
         }
@@ -721,7 +801,7 @@
         // Approve/Reject request
         async function approveRequest(attendanceId, approve) {
             const comment = approve ? null : prompt('Reason for rejection (optional):');
-            
+
             try {
                 const response = await fetch(`${API_BASE}/attendance/approve-request`, {
                     method: 'POST',
@@ -737,7 +817,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     alert(data.message);
                     loadPendingApprovals();
@@ -770,4 +850,5 @@
         checkAuth();
     </script>
 </body>
+
 </html>

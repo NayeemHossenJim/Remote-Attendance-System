@@ -1,17 +1,29 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+# from passlib.context import CryptContext # Removed
 from app.core.config import settings
 import secrets
 
-pwd_context = CryptContext(schemes=["bcrypt"])
+import bcrypt
+
+# pwd_context = CryptContext(schemes=["bcrypt"]) # Removed passlib
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    # return pwd_context.hash(password)
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed_bytes = bcrypt.hashpw(pwd_bytes, salt)
+    return hashed_bytes.decode('utf-8')
 
 def verify_password(password: str, hashed: str) -> bool:
-    return pwd_context.verify(password, hashed)
+    # return pwd_context.verify(password, hashed)
+    try:
+        pwd_bytes = password.encode('utf-8')
+        hashed_bytes = hashed.encode('utf-8')
+        return bcrypt.checkpw(pwd_bytes, hashed_bytes)
+    except Exception:
+        return False
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

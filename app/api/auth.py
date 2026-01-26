@@ -62,7 +62,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     
     # Create access token
     access_token = create_access_token(
-        data={"sub": user.id, "office_id": user.office_id, "role": user.role}
+        data={"sub": str(user.id), "office_id": user.office_id, "role": user.role}
     )
     
     return LoginResponse(
