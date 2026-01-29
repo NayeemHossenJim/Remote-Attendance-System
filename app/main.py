@@ -11,11 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="Remote Attendance System",
-    description="Production-ready remote attendance system with GPS tracking",
-    version="1.0.0"
-)
+app = FastAPI()
 
 # CORS middleware
 app.add_middleware(
