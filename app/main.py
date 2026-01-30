@@ -34,5 +34,5 @@ async def read_root():
     """Serve frontend HTML"""
     if os.path.exists("frontend/index.html"):
         return FileResponse("frontend/index.html")
-    return {"message": "Remote Attendance System API", "docs": "/docs"}
+    return {"message": "Remote Attendance System API use /docs for API documentation", "docs": "/docs"}
 
